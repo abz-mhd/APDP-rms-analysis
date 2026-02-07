@@ -1,0 +1,11 @@
+com\restaurant\analytics\analytics\CustomerAnalytics.class
+com\restaurant\RestaurantAnalyticsApplication.class
+com\restaurant\analytics\transform\DataTransformationService.class
+com\restaurant\analytics\analytics\MenuAnalytics.class
+com\restaurant\analytics\analytics\PeakDiningAnalytics.class
+com\restaurant\analytics\ingestion\DataIngestionService.class
+com\restaurant\analytics\analytics\RevenueAnalytics.class
+com\restaurant\analytics\analytics\BranchPerformanceAnalytics.class
+com\restaurant\analytics\api\AnalyticsController.class
+com\restaurant\analytics\model\RestaurantOrder.class
+com\restaurant\analytics\analytics\AnomalyDetectionService.class

@@ -1,0 +1,6 @@
+com\restaurant\analytics\analytics\AnomalyDetectionServiceTest.class
+com\restaurant\analytics\analytics\RevenueAnalyticsTest.class
+com\restaurant\analytics\analytics\BranchPerformanceAnalyticsTest.class
+com\restaurant\analytics\analytics\CustomerAnalyticsTest.class
+com\restaurant\analytics\analytics\MenuAnalyticsTest.class
+com\restaurant\analytics\analytics\PeakDiningAnalyticsTest.class
