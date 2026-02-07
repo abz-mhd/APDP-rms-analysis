@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Uber Eats Analytics</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --info-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            
+            --primary-color: #6c5ce7;
+            --secondary-color: #fd79a8;
+            --success-color: #00b894;
+            --warning-color: #fdcb6e;
+            --info-color: #74b9ff;
+            --dark-color: #2d3436;
+            
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-navbar: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --text-light: #b2bec3;
+            --text-white: #ffffff;
+            
+            --border-color: #ddd6fe;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Ultra Modern Navbar */
+        .navbar-ultra {
+            background: var(--bg-navbar);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-xl);
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand-ultra {
+            display: flex;
+            align-items: center;
+            color: var(--text-white) !important;
+            font-weight: 800;
+            font-size: 1.6rem;
+            text-decoration: none;
+        }
+        
+        .brand-icon-ultra {
+            width: 55px;
+            height: 55px;
+            background: var(--primary-gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            box-shadow: var(--shadow-glow);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+        
+        .brand-icon-ultra i {
+            color: white;
+            font-size: 1.6rem;
+        }
+        
+        .nav-link-ultra {
+            color: var(--text-light) !important;
+            font-weight: 600;
+            padding: 0.8rem 1.8rem !important;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.3rem;
+        }
+        
+        .nav-link-ultra:hover {
+            color: var(--text-white) !important;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .dropdown-menu-ultra {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow-xl);
+            padding: 1rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item-ultra {
+            color: var(--text-white) !important;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+        }
+        
+        .dropdown-item-ultra:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-white) !important;
+            transform: translateX(5px);
+        }
+        
+        /* Main Container */
+        .main-container {
+            margin-top: 100px;
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: var(--bg-secondary);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-title i {
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .page-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        /* Report Cards */
+        .report-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .report-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .report-card.primary::before { background: var(--primary-gradient); }
+        .report-card.secondary::before { background: var(--secondary-gradient); }
+        .report-card.success::before { background: var(--success-gradient); }
+        .report-card.warning::before { background: var(--warning-gradient); }
+        
+        .report-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .report-icon.primary { background: var(--primary-gradient); }
+        .report-icon.secondary { background: var(--secondary-gradient); }
+        .report-icon.success { background: var(--success-gradient); }
+        .report-icon.warning { background: var(--warning-gradient); }
+        
+        .report-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .report-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .report-button {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+        }
+        
+        .report-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            background: var(--bg-secondary);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 2rem 1rem;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .report-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ultra Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-ultra">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand-ultra" href="/">
+                <div class="brand-icon-ultra">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.6rem; font-weight: 900;">Uber Eats Analytics</div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">Restaurant Intelligence Platform</div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="/">
+                            <i class="fas fa-home me-2"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-ultra dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-pie me-2"></i>Analytics Modules
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-ultra">
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/peak-dining">
+                                <i class="fas fa-clock me-2"></i>Peak Dining Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/customer-demographics">
+                                <i class="fas fa-users me-2"></i>Customer Demographics
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/seasonal-behavior">
+                                <i class="fas fa-calendar-alt me-2"></i>Seasonal Behavior
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/menu-analysis">
+                                <i class="fas fa-utensils me-2"></i>Menu Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/revenue-analysis">
+                                <i class="fas fa-chart-line me-2"></i>Revenue Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/branch-performance">
+                                <i class="fas fa-building me-2"></i>Branch Performance
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/anomaly-detection">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Anomaly Detection
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="/reports">
+                            <i class="fas fa-file-alt me-2"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="#" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1 class="page-title">
+                <i class="fas fa-file-chart-column"></i>
+                Analytics Reports
+            </h1>
+            <p class="page-subtitle">Generate comprehensive reports and export data insights</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats fade-in-up">
+            <h2 style="text-align: center; margin-bottom: 2rem; font-weight: 800; color: var(--text-primary);">System Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">6,958</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">LKR 17.8M</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">100</div>
+                    <div class="stat-label">Active Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Restaurant Outlets</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">LKR 2,563</div>
+                    <div class="stat-label">Avg Order Value</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Types -->
+        <div class="report-cards fade-in-up">
+            <div class="report-card primary" onclick="generateReport('summary')">
+                <div class="report-icon primary">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="report-title">Summary Report</div>
+                <div class="report-description">Comprehensive overview of all key metrics, performance indicators, and business insights across all outlets</div>
+                <button class="report-button">Generate Summary Report</button>
+            </div>
+            
+            <div class="report-card secondary" onclick="generateReport('performance')">
+                <div class="report-icon secondary">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="report-title">Performance Report</div>
+                <div class="report-description">Detailed analysis of outlet performance, rankings, and operational efficiency metrics with comparisons</div>
+                <button class="report-button">Generate Performance Report</button>
+            </div>
+            
+            <div class="report-card success" onclick="generateReport('financial')">
+                <div class="report-icon success">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="report-title">Financial Report</div>
+                <div class="report-description">Revenue analysis, profit margins, payment methods, and comprehensive financial performance trends</div>
+                <button class="report-button">Generate Financial Report</button>
+            </div>
+            
+            <div class="report-card warning" onclick="generateReport('customer')">
+                <div class="report-icon warning">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="report-title">Customer Report</div>
+                <div class="report-description">Customer demographics, behavior patterns, loyalty analysis, and detailed retention metrics</div>
+                <button class="report-button">Generate Customer Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function generateReport(type) {
+            // Show loading
+            const card = event.currentTarget;
+            const button = card.querySelector('.report-button');
+            const originalText = button.textContent;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            button.disabled = true;
+            
+            // Simulate report generation
+            setTimeout(() => {
+                let reportUrl = '';
+                switch(type) {
+                    case 'summary':
+                        reportUrl = '/analysis/revenue-analysis';
+                        break;
+                    case 'performance':
+                        reportUrl = '/analysis/branch-performance';
+                        break;
+                    case 'financial':
+                        reportUrl = '/analysis/revenue-analysis';
+                        break;
+                    case 'customer':
+                        reportUrl = '/analysis/customer-demographics';
+                        break;
+                    default:
+                        reportUrl = '/analysis/revenue-analysis';
+                }
+                
+                // Navigate to the appropriate analysis page
+                window.location.href = reportUrl;
+            }, 1500);
+        }
+        
+        function refreshData() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>

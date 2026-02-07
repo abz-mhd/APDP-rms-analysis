@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ analysis_type.replace('-', ' ').title() }} - Uber Eats Analytics</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <style>
+        :root {
+            /* Modern Color Palette */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --info-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            
+            /* Base Colors */
+            --primary-color: #667eea;
+            --secondary-color: #f093fb;
+            --success-color: #4facfe;
+            --warning-color: #43e97b;
+            --info-color: #fa709a;
+            --dark-color: #2c3e50;
+            
+            /* Background Colors */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-sidebar: #1a202c;
+            --bg-navbar: #2d3748;
+            
+            /* Text Colors */
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --text-light: #a0aec0;
+            --text-white: #ffffff;
+            
+            /* Border & Shadow */
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Modern Navbar */
+        .navbar-modern {
+            background: var(--bg-navbar);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand-modern {
+            display: flex;
+            align-items: center;
+            color: var(--text-white) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        
+        .brand-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .brand-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link-modern {
+            color: var(--text-light) !important;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0 0.25rem;
+        }
+        
+        .nav-link-modern:hover {
+            color: var(--text-white) !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        /* Main Container */
+        .main-container {
+            margin-top: 90px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Analysis Header */
+        .analysis-header {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analysis-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .analysis-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .analysis-title i {
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .analysis-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        /* Status Card */
+        .status-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .status-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+            background: var(--info-gradient);
+        }
+        
+        .status-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .load-button {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .load-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: none;
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-title i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .chart-container {
+            min-height: 400px;
+            border-radius: 8px;
+        }
+        
+        /* Tables Section */
+        .table-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .table tbody td {
+            padding: 0.75rem 1rem;
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .table tbody tr:hover {
+            background: var(--bg-primary);
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+            color: #ef6c00;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+                margin-top: 80px;
+            }
+            
+            .analysis-header {
+                padding: 1.5rem;
+            }
+            
+            .analysis-title {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Smooth Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-modern">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand-modern" href="/">
+                <div class="brand-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 800;">Uber Eats Analytics</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8;">Restaurant Intelligence Platform</div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern" href="/">
+                            <i class="fas fa-home me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern" href="/reports">
+                            <i class="fas fa-file-alt me-2"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern" href="#" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Analysis Header -->
+        <div class="analysis-header fade-in">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="analysis-title">
+                        {% if analysis_type == 'peak-dining' %}
+                            <i class="fas fa-clock"></i>
+                        {% elif analysis_type == 'customer-demographics' %}
+                            <i class="fas fa-users"></i>
+                        {% elif analysis_type == 'menu-analysis' %}
+                            <i class="fas fa-utensils"></i>
+                        {% elif analysis_type == 'revenue-analysis' %}
+                            <i class="fas fa-chart-line"></i>
+                        {% elif analysis_type == 'branch-performance' %}
+                            <i class="fas fa-building"></i>
+                        {% elif analysis_type == 'anomaly-detection' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% else %}
+                            <i class="fas fa-chart-bar"></i>
+                        {% endif %}
+                        {{ analysis_type.replace('-', ' ').title() }} Analysis
+                    </h1>
+                    <p class="analysis-subtitle">
+                        {% if analysis_type == 'peak-dining' %}
+                            Analyze peak hours, dining patterns, and customer flow across all outlets
+                        {% elif analysis_type == 'customer-demographics' %}
+                            Understand customer age groups, gender distribution, and loyalty segments
+                        {% elif analysis_type == 'menu-analysis' %}
+                            Track popular items, category performance, and menu optimization insights
+                        {% elif analysis_type == 'revenue-analysis' %}
+                            Monitor revenue trends, payment methods, and financial performance metrics
+                        {% elif analysis_type == 'branch-performance' %}
+                            Compare outlet performance, rankings, and operational efficiency
+                        {% elif analysis_type == 'anomaly-detection' %}
+                            Identify unusual patterns, service issues, and operational alerts
+                        {% else %}
+                            Advanced analytics and insights for restaurant operations
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn load-button" onclick="loadData()">
+                        <i class="fas fa-play me-2"></i>Load Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Card -->
+        <div id="status" class="status-card fade-in">
+            <div class="status-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="status-text">Click "Load Analysis" to display real-time data and interactive charts</div>
+        </div>
+
+        <!-- Charts Section -->
+        <div id="charts" class="charts-section">
+            <!-- Charts will be loaded here -->
+        </div>
+
+        <!-- Tables Section -->
+        <div id="tables">
+            <!-- Tables will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const analysisType = '{{ analysis_type }}';
+
+        function updateStatus(message, type = 'info') {
+            const statusCard = document.getElementById('status');
+            const iconClass = type === 'error' ? 'fas fa-exclamation-circle' : 
+                             type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle';
+            
+            statusCard.innerHTML = `
+                <div class="status-icon">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="status-text">${message}</div>
+            `;
+            
+            statusCard.className = `status-card fade-in alert-${type}`;
+        }
+
+        function loadData() {
+            updateStatus('Loading analytics data...', 'info');
+            
+            // Load analytics data first
+            fetch('/api/analytics/' + analysisType)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Analytics API failed: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Analytics data received:', data);
+                    
+                    if (data.error) {
+                        throw new Error('Analytics error: ' + data.error);
+                    }
+                    
+                    updateStatus('Data loaded successfully, generating charts...', 'success');
+                    displayTables(data);
+                    
+                    // Now load charts
+                    return fetch('/charts/' + analysisType);
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Charts API failed: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(charts => {
+                    console.log('Charts data received:', charts);
+                    
+                    if (charts.error) {
+                        throw new Error('Charts error: ' + charts.error);
+                    }
+                    
+                    updateStatus('Rendering interactive charts...', 'success');
+                    displayCharts(charts);
+                    
+                    // Hide status after successful load
+                    setTimeout(() => {
+                        document.getElementById('status').style.display = 'none';
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Load error:', error);
+                    updateStatus('Error: ' + error.message, 'error');
+                });
+        }
+
+        function displayCharts(charts) {
+            const container = document.getElementById('charts');
+            let html = '';
+            
+            console.log('Charts received:', charts);
+            console.log('Number of charts:', Object.keys(charts).length);
+            
+            if (!charts || Object.keys(charts).length === 0) {
+                html = `
+                    <div class="chart-card">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No charts available for this analysis type
+                        </div>
+                    </div>
+                `;
+            } else {
+                Object.keys(charts).forEach(chartId => {
+                    const chartTitle = chartId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `
+                        <div class="chart-card fade-in">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    ${chartTitle}
+                                </div>
+                            </div>
+                            <div class="chart-container" id="${chartId}"></div>
+                        </div>
+                    `;
+                });
+            }
+            
+            container.innerHTML = html;
+            container.classList.add('charts-section');
+            container.style.display = 'block';
+            
+            // Render charts with better error handling
+            setTimeout(() => {
+                Object.keys(charts).forEach(chartId => {
+                    try {
+                        console.log('Rendering chart:', chartId);
+                        const chartData = JSON.parse(charts[chartId]);
+                        console.log('Chart data parsed for:', chartId);
+                        
+                        if (typeof Plotly !== 'undefined') {
+                            Plotly.newPlot(chartId, chartData.data, chartData.layout, {
+                                responsive: true,
+                                displayModeBar: false
+                            }).then(() => {
+                                console.log('Chart rendered successfully:', chartId);
+                            }).catch(plotlyError => {
+                                console.error('Plotly render error for', chartId, plotlyError);
+                                document.getElementById(chartId).innerHTML = `
+                                    <div class="alert alert-danger">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        Plotly render error: ${plotlyError.message}
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            console.error('Plotly not loaded');
+                            document.getElementById(chartId).innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    Plotly library not loaded
+                                </div>
+                            `;
+                        }
+                    } catch (e) {
+                        console.error('Chart parsing error:', chartId, e);
+                        document.getElementById(chartId).innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Chart parsing error: ${e.message}
+                            </div>
+                        `;
+                    }
+                });
+            }, 500);
+        }
+
+        function displayTables(data) {
+            const container = document.getElementById('tables');
+            let html = '';
+            
+            if (analysisType === 'peak-dining' && data.peakHourTables && data.peakHourTables.overallPeakHours) {
+                html += `
+                    <div class="table-card fade-in">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-clock"></i>
+                                Peak Hours Summary
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Hour</th>
+                                        <th>Time Range</th>
+                                        <th>Orders</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.peakHourTables.overallPeakHours.map((hour, index) => `
+                                        <tr>
+                                            <td><span class="badge bg-primary">${index + 1}</span></td>
+                                            <td><strong>${hour.hour}:00</strong></td>
+                                            <td>${hour.timeRange || `${hour.hour}:00 - ${hour.hour + 1}:00`}</td>
+                                            <td><span class="text-success fw-bold">${hour.orderCount}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (analysisType === 'menu-analysis' && data.popularItems) {
+                html += `
+                    <div class="table-card fade-in">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-utensils"></i>
+                                Popular Menu Items
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Item Name</th>
+                                        <th>Category</th>
+                                        <th>Orders</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.popularItems.slice(0, 10).map((item, index) => `
+                                        <tr>
+                                            <td><span class="badge bg-success">${index + 1}</span></td>
+                                            <td><strong>${item.itemName}</strong></td>
+                                            <td><span class="badge bg-secondary">${item.category}</span></td>
+                                            <td><span class="text-primary fw-bold">${item.orderCount}</span></td>
+                                            <td><span class="text-success fw-bold">LKR ${item.totalRevenue.toLocaleString()}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function refreshData() {
+            loadData();
+        }
+
+        // Auto-load on page ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, analysis type:', analysisType);
+            console.log('Plotly available:', typeof Plotly !== 'undefined');
+            
+            // Auto-load after 1 second
+            setTimeout(loadData, 1000);
+        });
+    </script>
+</body>
+</html>

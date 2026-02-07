@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Overview - Uber Eats Restaurant{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-tachometer-alt"></i> Analytics Overview Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshAllData()">
+                <i class="fas fa-sync-alt"></i> Refresh All
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Filter Section -->
+<div class="filter-section mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="outletFilter" class="form-label">
+                <i class="fas fa-building me-1"></i> Outlet
+            </label>
+            <select class="form-select" id="outletFilter" onchange="applyFilters()">
+                <option value="">All Outlets</option>
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="seasonFilter" class="form-label">
+                <i class="fas fa-calendar-alt me-1"></i> Season
+            </label>
+            <select class="form-select" id="seasonFilter" onchange="applyFilters()">
+                <option value="">All Seasons</option>
+                <option value="spring">Spring (Mar-May)</option>
+                <option value="summer">Summer (Jun-Aug)</option>
+                <option value="autumn">Autumn (Sep-Nov)</option>
+                <option value="winter">Winter (Dec-Feb)</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="dateRangeFilter" class="form-label">
+                <i class="fas fa-calendar me-1"></i> Date Range
+            </label>
+            <select class="form-select" id="dateRangeFilter" onchange="applyFilters()">
+                <option value="">All Time</option>
+                <option value="last_7_days">Last 7 Days</option>
+                <option value="last_30_days">Last 30 Days</option>
+                <option value="last_3_months">Last 3 Months</option>
+                <option value="last_6_months">Last 6 Months</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="button" class="btn btn-primary w-100" onclick="applyFilters()">
+                <i class="fas fa-filter me-1"></i> Apply Filters
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="totalOrders">Loading...</div>
+            <div class="metric-label">Total Orders</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="totalRevenue">Loading...</div>
+            <div class="metric-label">Total Revenue (LKR)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="avgOrderValue">Loading...</div>
+            <div class="metric-label">Avg Order Value (LKR)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-value" id="activeOutlets">Loading...</div>
+            <div class="metric-label">Active Outlets</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="row">
+    <!-- Peak Dining Charts -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-clock"></i> Peak Dining Patterns</h5>
+                <a href="/analysis" class="btn btn-sm btn-outline-primary">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="peakDiningChart" style="height: 300px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Customer Demographics -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-users"></i> Customer Demographics</h5>
+                <a href="/analysis" class="btn btn-sm btn-outline-primary">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="customerDemographicsChart" style="height: 300px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Trends -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-dollar-sign"></i> Revenue Trends</h5>
+                <a href="/analysis" class="btn btn-sm btn-outline-primary">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="revenueChart" style="height: 300px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popular Menu Items -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-utensils"></i> Popular Menu Items</h5>
+                <a href="/analysis" class="btn btn-sm btn-outline-primary">View Details</a>
+            </div>
+            <div class="card-body">
+                <div id="menuChart" style="height: 300px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Branch Performance Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-building"></i> Branch Performance Summary</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-success me-2" onclick="exportCSV('branch-performance')">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="exportPDF('branch-performance')">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="branchPerformanceTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Branch Name</th>
+                                <th>Revenue (LKR)</th>
+                                <th>Orders</th>
+                                <th>Avg Order Value (LKR)</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Alerts -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-exclamation-triangle"></i> Recent Alerts</h5>
+                <a href="/analysis" class="btn btn-sm btn-outline-danger">View All Alerts</a>
+            </div>
+            <div class="card-body">
+                <div id="alertsContainer">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading alerts...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadOutlets();
+    loadOverviewData();
+});
+
+function loadOutlets() {
+    fetch('/api/outlets')
+        .then(response => response.json())
+        .then(outlets => {
+            const outletSelect = document.getElementById('outletFilter');
+            outletSelect.innerHTML = '<option value="">All Outlets</option>';
+            
+            outlets.forEach(outlet => {
+                const option = document.createElement('option');
+                option.value = outlet.id;
+                option.textContent = `${outlet.name} (${outlet.borough})`;
+                outletSelect.appendChild(option);
+            });
+            
+            // Update active outlets count
+            document.getElementById('activeOutlets').textContent = outlets.length;
+        })
+        .catch(error => {
+            console.error('Error loading outlets:', error);
+            document.getElementById('activeOutlets').textContent = '0';
+        });
+}
+
+function applyFilters() {
+    loadOverviewData();
+}
+
+function loadOverviewData() {
+    // Get filter values
+    const outletId = document.getElementById('outletFilter')?.value || '';
+    const season = document.getElementById('seasonFilter')?.value || '';
+    const dateRange = document.getElementById('dateRangeFilter')?.value || '';
+    
+    const params = new URLSearchParams();
+    if (outletId) params.append('outletId', outletId);
+    if (season) params.append('season', season);
+    if (dateRange) params.append('dateRange', dateRange);
+    
+    // Show loading states
+    showLoadingStates();
+    
+    // Load all analytics data with filters - handle each request individually
+    const fetchWithFallback = async (url) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching ${url}:`, error);
+            return { error: error.message };
+        }
+    };
+    
+    Promise.all([
+        fetchWithFallback(`/api/analytics/peak-dining?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/customer-demographics?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/revenue-analysis?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/menu-analysis?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/branch-performance?${params.toString()}`),
+        fetchWithFallback(`/api/analytics/anomaly-detection?${params.toString()}`)
+    ])
+    .then(([peakData, customerData, revenueData, menuData, branchData, anomalyData]) => {
+        console.log('Data loaded successfully:', {
+            peak: !!peakData && !peakData.error,
+            customer: !!customerData && !customerData.error,
+            revenue: !!revenueData && !revenueData.error,
+            menu: !!menuData && !menuData.error,
+            branch: !!branchData && !branchData.error,
+            anomaly: !!anomalyData && !anomalyData.error
+        });
+        
+        updateMetrics(revenueData);
+        createOverviewCharts(peakData, customerData, revenueData, menuData);
+        updateBranchTable(branchData);
+        updateAlerts(anomalyData);
+    })
+    .catch(error => {
+        console.error('Error loading overview data:', error);
+        showError('Failed to load dashboard data. Please check your connection and try again.');
+        hideLoadingStates();
+    });
+}
+
+function showLoadingStates() {
+    // Show loading spinners in charts
+    const chartIds = ['peakDiningChart', 'customerDemographicsChart', 'revenueChart', 'menuChart'];
+    chartIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.innerHTML = `
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+        }
+    });
+}
+
+function hideLoadingStates() {
+    // This will be called if there's an error
+    const chartIds = ['peakDiningChart', 'customerDemographicsChart', 'revenueChart', 'menuChart'];
+    chartIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element && element.innerHTML.includes('spinner-border')) {
+            element.innerHTML = `
+                <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                    <div class="text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                        <div>Failed to load chart</div>
+                    </div>
+                </div>
+            `;
+        }
+    });
+}
+
+function updateMetrics(revenueData) {
+    if (revenueData && revenueData.revenueSummary && !revenueData.error) {
+        const summary = revenueData.revenueSummary;
+        document.getElementById('totalOrders').textContent = summary.totalOrders.toLocaleString();
+        document.getElementById('totalRevenue').textContent = 'LKR ' + summary.totalRevenue.toLocaleString();
+        document.getElementById('avgOrderValue').textContent = 'LKR ' + summary.averageOrderValue.toFixed(2);
+    } else {
+        // Show error state for metrics
+        console.error('Revenue data error:', revenueData?.error || 'No revenue data');
+        document.getElementById('totalOrders').textContent = 'N/A';
+        document.getElementById('totalRevenue').textContent = 'N/A';
+        document.getElementById('avgOrderValue').textContent = 'N/A';
+    }
+}
+
+function createOverviewCharts(peakData, customerData, revenueData, menuData) {
+    console.log('Creating charts with data:', {
+        peakData: peakData,
+        customerData: customerData,
+        revenueData: revenueData,
+        menuData: menuData
+    });
+    
+    // Peak Dining Chart - using minimal blue/gray colors
+    if (peakData && peakData.dailyPatterns && !peakData.error && Object.keys(peakData.dailyPatterns).length > 0) {
+        const days = Object.keys(peakData.dailyPatterns);
+        const counts = Object.values(peakData.dailyPatterns);
+        
+        const peakChart = {
+            data: [{
+                x: days,
+                y: counts,
+                type: 'bar',
+                marker: { 
+                    color: '#4a90e2',
+                    line: { color: '#6c757d', width: 1 }
+                }
+            }],
+            layout: {
+                title: {
+                    text: 'Orders by Day of Week',
+                    font: { color: '#4a90e2', size: 14 }
+                },
+                xaxis: { 
+                    title: 'Day',
+                    color: '#6c757d'
+                },
+                yaxis: { 
+                    title: 'Order Count',
+                    color: '#6c757d'
+                },
+                margin: { t: 40, b: 40, l: 50, r: 20 },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                font: { color: '#6c757d' }
+            }
+        };
+        
+        Plotly.newPlot('peakDiningChart', peakChart.data, peakChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Peak data error:', peakData?.error || 'No peak data');
+        document.getElementById('peakDiningChart').innerHTML = '<div class="alert alert-warning">Peak dining data unavailable</div>';
+    }
+    
+    // Customer Demographics Chart - using minimal colors
+    if (customerData && customerData.ageDistribution && !customerData.error && Object.keys(customerData.ageDistribution).length > 0) {
+        const labels = Object.keys(customerData.ageDistribution);
+        const values = Object.values(customerData.ageDistribution);
+        
+        // Alternating blue and gray colors
+        const colors = labels.map((_, index) => index % 2 === 0 ? '#4a90e2' : '#6c757d');
+        
+        const customerChart = {
+            data: [{
+                labels: labels,
+                values: values,
+                type: 'pie',
+                hole: 0.4,
+                marker: { colors: colors },
+                textinfo: 'label+percent',
+                textposition: 'outside'
+            }],
+            layout: {
+                title: {
+                    text: 'Customer Age Distribution',
+                    font: { color: '#4a90e2', size: 14 }
+                },
+                margin: { t: 40, b: 40, l: 20, r: 20 },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                font: { color: '#6c757d' }
+            }
+        };
+        
+        Plotly.newPlot('customerDemographicsChart', customerChart.data, customerChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Customer data error:', customerData?.error || 'No customer data');
+        document.getElementById('customerDemographicsChart').innerHTML = '<div class="alert alert-warning">Customer demographics data unavailable</div>';
+    }
+    
+    // Revenue Chart - using minimal colors
+    if (revenueData && revenueData.dailyRevenue && !revenueData.error && Object.keys(revenueData.dailyRevenue).length > 0) {
+        const dates = Object.keys(revenueData.dailyRevenue).sort();
+        const revenues = dates.map(date => revenueData.dailyRevenue[date]);
+        
+        const revenueChart = {
+            data: [{
+                x: dates,
+                y: revenues,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { 
+                    color: '#4a90e2',
+                    width: 3
+                },
+                marker: { 
+                    color: '#6c757d',
+                    size: 6
+                }
+            }],
+            layout: {
+                title: {
+                    text: 'Daily Revenue Trend (LKR)',
+                    font: { color: '#4a90e2', size: 14 }
+                },
+                xaxis: { 
+                    title: 'Date',
+                    color: '#6c757d'
+                },
+                yaxis: { 
+                    title: 'Revenue (LKR)',
+                    color: '#6c757d'
+                },
+                margin: { t: 40, b: 40, l: 60, r: 20 },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                font: { color: '#6c757d' }
+            }
+        };
+        
+        Plotly.newPlot('revenueChart', revenueChart.data, revenueChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Revenue data error:', revenueData?.error || 'No revenue data');
+        document.getElementById('revenueChart').innerHTML = '<div class="alert alert-warning">Revenue data unavailable</div>';
+    }
+    
+    // Menu Chart - using minimal colors
+    if (menuData && menuData.popularItems && Array.isArray(menuData.popularItems) && menuData.popularItems.length > 0 && !menuData.error) {
+        const items = menuData.popularItems.slice(0, 5);
+        const itemNames = items.map(item => item.itemName);
+        const orderCounts = items.map(item => item.orderCount);
+        
+        const menuChart = {
+            data: [{
+                x: orderCounts,
+                y: itemNames,
+                type: 'bar',
+                orientation: 'h',
+                marker: { 
+                    color: '#6c757d',
+                    line: { color: '#4a90e2', width: 1 }
+                }
+            }],
+            layout: {
+                title: {
+                    text: 'Top 5 Popular Items',
+                    font: { color: '#4a90e2', size: 14 }
+                },
+                xaxis: { 
+                    title: 'Order Count',
+                    color: '#6c757d'
+                },
+                margin: { t: 40, b: 40, l: 120, r: 20 },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                font: { color: '#6c757d' }
+            }
+        };
+        
+        Plotly.newPlot('menuChart', menuChart.data, menuChart.layout, {responsive: true, displayModeBar: false});
+    } else {
+        console.error('Menu data error:', menuData?.error || 'No menu data');
+        document.getElementById('menuChart').innerHTML = '<div class="alert alert-warning">Menu data unavailable</div>';
+    }
+}
+
+function updateBranchTable(branchData) {
+    const tbody = document.querySelector('#branchPerformanceTable tbody');
+    
+    if (branchData && branchData.branchRankings && branchData.branchRankings.length > 0 && !branchData.error) {
+        const maxRevenue = Math.max(...branchData.branchRankings.map(branch => branch.revenue));
+        
+        tbody.innerHTML = branchData.branchRankings.map((branch, index) => {
+            const performancePercent = Math.min(100, (branch.revenue / maxRevenue) * 100);
+            
+            return `
+                <tr>
+                    <td><span class="badge bg-primary">${index + 1}</span></td>
+                    <td><strong>${branch.branchName}</strong></td>
+                    <td>LKR ${branch.revenue.toLocaleString()}</td>
+                    <td>${branch.orderCount.toLocaleString()}</td>
+                    <td>LKR ${branch.averageOrderValue.toFixed(2)}</td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: ${performancePercent}%; background-color: #4a90e2;">
+                                ${performancePercent.toFixed(1)}%
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } else {
+        console.error('Branch data error:', branchData?.error || 'No branch data');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-info-circle me-2"></i>
+                    ${branchData?.error ? 'Error loading branch data: ' + branchData.error : 'No branch performance data available'}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function updateAlerts(anomalyData) {
+    const alertsContainer = document.getElementById('alertsContainer');
+    
+    if (anomalyData && anomalyData.alertLogs && anomalyData.alertLogs.length > 0 && !anomalyData.error) {
+        alertsContainer.innerHTML = anomalyData.alertLogs.slice(0, 3).map(alert => `
+            <div class="alert alert-${alert.severity === 'HIGH' ? 'danger' : alert.severity === 'MEDIUM' ? 'warning' : 'info'} alert-dismissible">
+                <strong>${alert.type}:</strong> ${alert.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `).join('');
+    } else {
+        console.error('Anomaly data error:', anomalyData?.error || 'No anomaly data');
+        const message = anomalyData?.error ? 
+            `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Error loading alerts: ${anomalyData.error}</div>` :
+            '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>No recent alerts. All systems operating normally.</div>';
+        alertsContainer.innerHTML = message;
+    }
+}
+
+function refreshAllData() {
+    loadOverviewData();
+}
+
+function exportCSV(type) {
+    const params = new URLSearchParams();
+    const outletId = document.getElementById('outletFilter')?.value || '';
+    const season = document.getElementById('seasonFilter')?.value || '';
+    const dateRange = document.getElementById('dateRangeFilter')?.value || '';
+    
+    if (outletId) params.append('outletId', outletId);
+    if (season) params.append('season', season);
+    if (dateRange) params.append('dateRange', dateRange);
+    
+    window.open(`/reports/export/csv/${type}?${params.toString()}`, '_blank');
+}
+
+function exportPDF(type) {
+    const params = new URLSearchParams();
+    const outletId = document.getElementById('outletFilter')?.value || '';
+    const season = document.getElementById('seasonFilter')?.value || '';
+    const dateRange = document.getElementById('dateRangeFilter')?.value || '';
+    
+    if (outletId) params.append('outletId', outletId);
+    if (season) params.append('season', season);
+    if (dateRange) params.append('dateRange', dateRange);
+    
+    window.open(`/reports/export/pdf/${type}?${params.toString()}`, '_blank');
+}
+
+function showError(message) {
+    const alertHtml = `
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <i class="fas fa-exclamation-circle"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.main-content');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        const alert = container.querySelector('.alert-danger');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

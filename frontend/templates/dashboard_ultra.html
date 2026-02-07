@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Analytics Dashboard - RestaurantIQ</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <style>
+        :root {
+            /* Ultra Modern Color Palette */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --info-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            --purple-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --orange-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --teal-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --blue-gradient: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            
+            /* Attractive Base Colors */
+            --primary-color: #6c5ce7;
+            --secondary-color: #fd79a8;
+            --success-color: #00b894;
+            --warning-color: #fdcb6e;
+            --info-color: #74b9ff;
+            --dark-color: #2d3436;
+            --purple-color: #a29bfe;
+            --orange-color: #fd79a8;
+            --teal-color: #00cec9;
+            
+            /* Background Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-navbar: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            --bg-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            
+            /* Text Colors */
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --text-light: #b2bec3;
+            --text-white: #ffffff;
+            
+            /* Border & Shadow */
+            --border-color: #ddd6fe;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Ultra Modern Navbar */
+        .navbar-ultra {
+            background: var(--bg-navbar);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-xl);
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand-ultra {
+            display: flex;
+            align-items: center;
+            color: var(--text-white) !important;
+            font-weight: 800;
+            font-size: 1.6rem;
+            text-decoration: none;
+        }
+        
+        .brand-icon-ultra {
+            width: 55px;
+            height: 55px;
+            background: var(--primary-gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            box-shadow: var(--shadow-glow);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+        
+        .brand-icon-ultra i {
+            color: white;
+            font-size: 1.6rem;
+        }
+        
+        .nav-link-ultra {
+            color: var(--text-light) !important;
+            font-weight: 600;
+            padding: 0.8rem 1.8rem !important;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.3rem;
+            position: relative;
+        }
+        
+        .nav-link-ultra:hover {
+            color: var(--text-white) !important;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .dropdown-menu-ultra {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow-xl);
+            padding: 1rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item-ultra {
+            color: var(--text-white) !important;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+        }
+        
+        .dropdown-item-ultra:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-white) !important;
+            transform: translateX(5px);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: var(--bg-hero);
+            padding: 150px 0 100px;
+            margin-top: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="1000,100 1000,0 0,100"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: var(--text-white);
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .hero-stat {
+            text-align: center;
+        }
+        
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: block;
+        }
+        
+        .hero-stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+        
+        /* Main Container */
+        .main-container {
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card-ultra {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card-ultra:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .stat-card-ultra::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .stat-card-ultra.primary::before { background: var(--primary-gradient); }
+        .stat-card-ultra.secondary::before { background: var(--secondary-gradient); }
+        .stat-card-ultra.success::before { background: var(--success-gradient); }
+        .stat-card-ultra.warning::before { background: var(--warning-gradient); }
+        
+        .stat-icon-ultra {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-icon-ultra.primary { background: var(--primary-gradient); }
+        .stat-icon-ultra.secondary { background: var(--secondary-gradient); }
+        .stat-icon-ultra.success { background: var(--success-gradient); }
+        .stat-icon-ultra.warning { background: var(--warning-gradient); }
+        
+        .stat-value-ultra {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+        }
+        
+        .stat-label-ultra {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        .stat-change-ultra {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-top: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-change-ultra.positive { color: #00b894; }
+        .stat-change-ultra.negative { color: #e17055; }
+        
+        /* Outlets Section */
+        .section-ultra {
+            background: var(--bg-secondary);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .section-header-ultra {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title-ultra {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .section-title-ultra i {
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-subtitle-ultra {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        .outlets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+        }
+        
+        .outlet-card-ultra {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .outlet-card-ultra:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .outlet-card-ultra::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .outlet-card-ultra:nth-child(1)::before { background: var(--primary-gradient); }
+        .outlet-card-ultra:nth-child(2)::before { background: var(--secondary-gradient); }
+        .outlet-card-ultra:nth-child(3)::before { background: var(--success-gradient); }
+        
+        .outlet-header-ultra {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .outlet-name-ultra {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .outlet-status-ultra {
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .outlet-info-ultra {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .outlet-detail-ultra {
+            display: flex;
+            align-items: center;
+        }
+        
+        .outlet-detail-ultra i {
+            width: 25px;
+            color: var(--primary-color);
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+        }
+        
+        .outlet-detail-ultra span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .outlet-metrics-ultra {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+        
+        .outlet-metric-ultra {
+            text-align: center;
+        }
+        
+        .outlet-metric-value-ultra {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .outlet-metric-label-ultra {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+        
+        /* Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .analytics-card-ultra {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analytics-card-ultra:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: var(--shadow-xl);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .analytics-icon-ultra {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .analytics-title-ultra {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+        }
+        
+        .analytics-description-ultra {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .main-container {
+                padding: 2rem 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .outlets-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-ultra {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ultra Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-ultra">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand-ultra" href="/">
+                <div class="brand-icon-ultra">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.6rem; font-weight: 900;">RestaurantIQ Analytics</div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">Restaurant Intelligence Platform</div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="/">
+                            <i class="fas fa-home me-2"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-ultra dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-pie me-2"></i>Analytics Modules
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-ultra">
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/peak-dining">
+                                <i class="fas fa-clock me-2"></i>Peak Dining Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/customer-demographics">
+                                <i class="fas fa-users me-2"></i>Customer Demographics
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/seasonal-behavior">
+                                <i class="fas fa-calendar-alt me-2"></i>Seasonal Behavior
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/menu-analysis">
+                                <i class="fas fa-utensils me-2"></i>Menu Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/revenue-analysis">
+                                <i class="fas fa-chart-line me-2"></i>Revenue Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/branch-performance">
+                                <i class="fas fa-building me-2"></i>Branch Performance
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/anomaly-detection">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Anomaly Detection
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="/reports">
+                            <i class="fas fa-file-alt me-2"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="#" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Restaurant Analytics Dashboard</h1>
+                <p class="hero-subtitle">Real-time insights and performance metrics for restaurant network</p>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-number" id="heroOrders">Loading...</span>
+                        <span class="hero-stat-label">Total Orders</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-number" id="heroRevenue">Loading...</span>
+                        <span class="hero-stat-label">Total Revenue</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-number" id="heroOutlets">{{ outlets|length }}</span>
+                        <span class="hero-stat-label">Active Outlets</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Stats Cards -->
+        <div class="stats-grid fade-in-up">
+            <div class="stat-card-ultra primary">
+                <div class="stat-icon-ultra primary">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-value-ultra" id="totalOrders">Loading...</div>
+                <div class="stat-label-ultra">Total Orders</div>
+                <div class="stat-change-ultra positive">
+                    <i class="fas fa-arrow-up me-2"></i>+12.5% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card-ultra secondary">
+                <div class="stat-icon-ultra secondary">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value-ultra" id="totalRevenue">Loading...</div>
+                <div class="stat-label-ultra">Total Revenue</div>
+                <div class="stat-change-ultra positive">
+                    <i class="fas fa-arrow-up me-2"></i>+8.3% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card-ultra success">
+                <div class="stat-icon-ultra success">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value-ultra" id="totalCustomers">100</div>
+                <div class="stat-label-ultra">Active Customers</div>
+                <div class="stat-change-ultra positive">
+                    <i class="fas fa-arrow-up me-2"></i>+15.2% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card-ultra warning">
+                <div class="stat-icon-ultra warning">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="stat-value-ultra" id="avgOrderValue">LKR 2,563</div>
+                <div class="stat-label-ultra">Avg Order Value</div>
+                <div class="stat-change-ultra positive">
+                    <i class="fas fa-arrow-up me-2"></i>+5.7% from last month
+                </div>
+            </div>
+        </div>
+
+        <!-- Outlets Section -->
+        <div class="section-ultra fade-in-up">
+            <div class="section-header-ultra">
+                <h2 class="section-title-ultra">
+                    <i class="fas fa-store"></i>
+                    Restaurant Outlets
+                </h2>
+                <p class="section-subtitle-ultra">Monitor performance across all restaurant locations</p>
+            </div>
+            
+            <div class="outlets-grid" id="outletsGrid">
+                <!-- Outlets will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Analytics Modules -->
+        <div class="section-ultra fade-in-up">
+            <div class="section-header-ultra">
+                <h2 class="section-title-ultra">
+                    <i class="fas fa-chart-pie"></i>
+                    Analytics Modules
+                </h2>
+                <p class="section-subtitle-ultra">Comprehensive analytics tools for data-driven decisions</p>
+            </div>
+            
+            <div class="analytics-grid">
+                <a href="/analysis/peak-dining" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--primary-gradient);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Peak Dining Analysis</div>
+                    <div class="analytics-description-ultra">Analyze peak hours, dining patterns, and customer flow across all outlets</div>
+                </a>
+                
+                <a href="/analysis/customer-demographics" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--secondary-gradient);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Customer Demographics</div>
+                    <div class="analytics-description-ultra">Understand customer age groups, gender distribution, and loyalty segments</div>
+                </a>
+                
+                <a href="/analysis/seasonal-behavior" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--info-gradient);">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Seasonal Behavior</div>
+                    <div class="analytics-description-ultra">Track seasonal trends, customer retention, and monthly performance patterns</div>
+                </a>
+                
+                <a href="/analysis/menu-analysis" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--success-gradient);">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Menu Performance</div>
+                    <div class="analytics-description-ultra">Track popular items, category performance, and menu optimization insights</div>
+                </a>
+                
+                <a href="/analysis/revenue-analysis" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--warning-gradient);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Revenue Analytics</div>
+                    <div class="analytics-description-ultra">Monitor revenue trends, payment methods, and financial performance metrics</div>
+                </a>
+                
+                <a href="/analysis/branch-performance" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--purple-gradient);">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Branch Performance</div>
+                    <div class="analytics-description-ultra">Compare outlet performance, rankings, and operational efficiency</div>
+                </a>
+                
+                <a href="/analysis/anomaly-detection" class="analytics-card-ultra">
+                    <div class="analytics-icon-ultra" style="background: var(--dark-gradient);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="analytics-title-ultra">Anomaly Detection</div>
+                    <div class="analytics-description-ultra">Identify unusual patterns, service issues, and operational alerts</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Load dashboard data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            updateLastUpdated();
+            
+            // Auto-refresh every 5 minutes
+            setInterval(loadDashboardData, 300000);
+        });
+        
+        function loadDashboardData() {
+            // Load outlets
+            fetch('/api/outlets')
+                .then(response => response.json())
+                .then(outlets => {
+                    displayOutlets(outlets);
+                })
+                .catch(error => {
+                    console.error('Error loading outlets:', error);
+                });
+            
+            // Load summary stats
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => {
+                    updateStats(data);
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                });
+        }
+        
+        function displayOutlets(outlets) {
+            const container = document.getElementById('outletsGrid');
+            
+            if (!outlets || outlets.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted">No outlets found</div>';
+                return;
+            }
+            
+            const outletCards = outlets.map((outlet, index) => {
+                return `
+                    <div class="outlet-card-ultra" style="animation-delay: ${index * 0.2}s;">
+                        <div class="outlet-header-ultra">
+                            <div class="outlet-name-ultra">${outlet.name}</div>
+                            <div class="outlet-status-ultra">Active</div>
+                        </div>
+                        
+                        <div class="outlet-info-ultra">
+                            <div class="outlet-detail-ultra">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${outlet.borough}</span>
+                            </div>
+                            <div class="outlet-detail-ultra">
+                                <i class="fas fa-chair"></i>
+                                <span>${outlet.capacity} seats</span>
+                            </div>
+                        </div>
+                        
+                        <div class="outlet-metrics-ultra">
+                            <div class="outlet-metric-ultra">
+                                <div class="outlet-metric-value-ultra" id="orders-${outlet.id}">-</div>
+                                <div class="outlet-metric-label-ultra">Orders</div>
+                            </div>
+                            <div class="outlet-metric-ultra">
+                                <div class="outlet-metric-value-ultra" id="revenue-${outlet.id}">-</div>
+                                <div class="outlet-metric-label-ultra">Revenue</div>
+                            </div>
+                            <div class="outlet-metric-ultra">
+                                <div class="outlet-metric-value-ultra" id="customers-${outlet.id}">-</div>
+                                <div class="outlet-metric-label-ultra">Customers</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = outletCards;
+            
+            // Load individual outlet metrics
+            outlets.forEach(outlet => {
+                loadOutletMetrics(outlet.id);
+            });
+        }
+        
+        function loadOutletMetrics(outletId) {
+            fetch(`/api/analytics/revenue-analysis?outletId=${outletId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.revenueSummary) {
+                        const ordersEl = document.getElementById(`orders-${outletId}`);
+                        const revenueEl = document.getElementById(`revenue-${outletId}`);
+                        const customersEl = document.getElementById(`customers-${outletId}`);
+                        
+                        if (ordersEl) ordersEl.textContent = data.revenueSummary.totalOrders.toLocaleString();
+                        if (revenueEl) revenueEl.textContent = `LKR ${(data.revenueSummary.totalRevenue / 1000000).toFixed(1)}M`;
+                        if (customersEl) customersEl.textContent = Math.floor(data.revenueSummary.totalOrders / 50); // Estimate
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error loading metrics for outlet ${outletId}:`, error);
+                });
+        }
+        
+        function updateStats(data) {
+            // Load real revenue analysis data for all outlets
+            fetch('/api/analytics/revenue-analysis')
+                .then(response => response.json())
+                .then(revenueData => {
+                    if (revenueData.revenueSummary) {
+                        // Update hero stats
+                        document.getElementById('heroOrders').textContent = revenueData.revenueSummary.totalOrders.toLocaleString();
+                        document.getElementById('heroRevenue').textContent = `LKR ${(revenueData.revenueSummary.totalRevenue / 1000000).toFixed(1)}M`;
+                        
+                        // Update main stats cards
+                        document.getElementById('totalOrders').textContent = revenueData.revenueSummary.totalOrders.toLocaleString();
+                        document.getElementById('totalRevenue').textContent = `LKR ${(revenueData.revenueSummary.totalRevenue / 1000000).toFixed(1)}M`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading revenue data:', error);
+                });
+            
+            // Update outlet count from data
+            if (data.record_count) {
+                // Keep the outlet count as is (it's already correct from template)
+            }
+        }
+        
+        function updateLastUpdated() {
+            const now = new Date();
+            // Update any last updated displays if needed
+        }
+        
+        function refreshData() {
+            loadDashboardData();
+            updateLastUpdated();
+        }
+        
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

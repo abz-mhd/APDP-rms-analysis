@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Uber Eats Restaurant{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-file-alt"></i> Reports & Export</h1>
+</div>
+
+<!-- Export Options -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-download"></i> Export Analytics Data</h5>
+            </div>
+            <div class="card-body">
+                <form id="exportForm">
+                    <div class="mb-3">
+                        <label for="analysisType" class="form-label">Analysis Type</label>
+                        <select class="form-select" id="analysisType" required>
+                            <option value="">Select Analysis Type</option>
+                            <option value="peak-dining">Peak Dining Analysis</option>
+                            <option value="customer-demographics">Customer Demographics</option>
+                            <option value="customer-seasonal">Customer Seasonal Behavior</option>
+                            <option value="menu-analysis">Menu Analysis</option>
+                            <option value="revenue-analysis">Revenue Analysis</option>
+                            <option value="anomaly-detection">Anomaly Detection</option>
+                            <option value="branch-performance">Branch Performance</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exportOutlet" class="form-label">Branch/Outlet (Optional)</label>
+                        <select class="form-select" id="exportOutlet">
+                            <option value="">All Outlets</option>
+                            {% for outlet in outlets %}
+                            <option value="{{ outlet.outletId }}">{{ outlet.outletName }} ({{ outlet.borough }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exportSeason" class="form-label">Season (Optional)</label>
+                        <select class="form-select" id="exportSeason">
+                            <option value="">All Seasons</option>
+                            <option value="spring">Spring</option>
+                            <option value="summer">Summer</option>
+                            <option value="autumn">Autumn</option>
+                            <option value="winter">Winter</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exportFestival" class="form-label">Festival Period (Optional)</label>
+                        <select class="form-select" id="exportFestival">
+                            <option value="">All Periods</option>
+                            <option value="christmas">Christmas</option>
+                            <option value="new_year">New Year</option>
+                            <option value="valentine">Valentine's Day</option>
+                            <option value="easter">Easter</option>
+                            <option value="diwali">Diwali</option>
+                            <option value="vesak">Vesak</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success" onclick="exportData('csv')">
+                            <i class="fas fa-file-csv"></i> Export as CSV
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="exportData('pdf')">
+                            <i class="fas fa-file-pdf"></i> Export as PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Export Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>Available Export Formats:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-file-csv text-success"></i> <strong>CSV Format</strong> - Tabular data suitable for Excel and data analysis tools</li>
+                    <li><i class="fas fa-file-pdf text-danger"></i> <strong>PDF Format</strong> - Formatted reports with tables and summaries</li>
+                </ul>
+                
+                <h6 class="mt-4">Export Contents:</h6>
+                <div class="accordion" id="exportAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="peakDiningHeader">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#peakDining">
+                                Peak Dining Analysis
+                            </button>
+                        </h2>
+                        <div id="peakDining" class="accordion-collapse collapse" data-bs-parent="#exportAccordion">
+                            <div class="accordion-body">
+                                <small>Peak hours data, branch summaries, order patterns by time and day</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="customerHeader">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#customer">
+                                Customer Analytics
+                            </button>
+                        </h2>
+                        <div id="customer" class="accordion-collapse collapse" data-bs-parent="#exportAccordion">
+                            <div class="accordion-body">
+                                <small>Age distribution, gender analysis, loyalty groups, spending patterns</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="menuHeader">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+                                Menu Analysis
+                            </button>
+                        </h2>
+                        <div id="menu" class="accordion-collapse collapse" data-bs-parent="#exportAccordion">
+                            <div class="accordion-body">
+                                <small>Popular items, category performance, spice preferences, vegetarian analysis</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="revenueHeader">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#revenue">
+                                Revenue Analysis
+                            </button>
+                        </h2>
+                        <div id="revenue" class="accordion-collapse collapse" data-bs-parent="#exportAccordion">
+                            <div class="accordion-body">
+                                <small>Revenue summaries, daily/monthly trends, payment methods, outlet comparisons</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="branchHeader">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#branch">
+                                Branch Performance
+                            </button>
+                        </h2>
+                        <div id="branch" class="accordion-collapse collapse" data-bs-parent="#exportAccordion">
+                            <div class="accordion-body">
+                                <small>Branch rankings, performance metrics, efficiency analysis, customer satisfaction</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Status -->
+<div id="exportStatus" class="mt-4" style="display: none;">
+    <div class="alert alert-info">
+        <i class="fas fa-spinner fa-spin"></i> Generating report... Please wait.
+    </div>
+</div>
+
+<script>
+function exportData(format) {
+    const analysisType = document.getElementById('analysisType').value;
+    const outlet = document.getElementById('exportOutlet').value;
+    const season = document.getElementById('exportSeason').value;
+    const festival = document.getElementById('exportFestival').value;
+    
+    if (!analysisType) {
+        alert('Please select an analysis type');
+        return;
+    }
+    
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (outlet) params.append('outletId', outlet);
+    if (season) params.append('season', season);
+    if (festival) params.append('festival', festival);
+    
+    // Show loading status
+    const statusDiv = document.getElementById('exportStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = `
+        <div class="alert alert-info">
+            <i class="fas fa-spinner fa-spin"></i> Generating ${format.toUpperCase()} report... Please wait.
+        </div>
+    `;
+    
+    // Create download URL
+    const url = `/reports/export/${format}/${analysisType}?${params.toString()}`;
+    
+    // Create temporary link and trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${analysisType}_report.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Hide loading status after a delay
+    setTimeout(() => {
+        statusDiv.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> Report generated successfully! Check your downloads folder.
+            </div>
+        `;
+        
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 3000);
+    }, 2000);
+}
+
+// Auto-hide alerts after some time
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            if (alert.classList.contains('alert-success') || alert.classList.contains('alert-info')) {
+                alert.style.display = 'none';
+            }
+        });
+    }, 5000);
+});
+</script>
+{% endblock %}

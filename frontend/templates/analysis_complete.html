@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ analysis_type.replace('-', ' ').title() }} - RestaurantIQ Analytics</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <style>
+        :root {
+            /* Ultra Modern Color Palette */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --info-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            --purple-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --orange-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --teal-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --blue-gradient: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            
+            /* Attractive Base Colors */
+            --primary-color: #6c5ce7;
+            --secondary-color: #fd79a8;
+            --success-color: #00b894;
+            --warning-color: #fdcb6e;
+            --info-color: #74b9ff;
+            --dark-color: #2d3436;
+            --purple-color: #a29bfe;
+            --orange-color: #fd79a8;
+            --teal-color: #00cec9;
+            
+            /* Background Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-navbar: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            --bg-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            
+            /* Text Colors */
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --text-light: #b2bec3;
+            --text-white: #ffffff;
+            
+            /* Border & Shadow */
+            --border-color: #ddd6fe;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }        
+
+        /* Ultra Modern Navbar */
+        .navbar-ultra {
+            background: var(--bg-navbar);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-xl);
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand-ultra {
+            display: flex;
+            align-items: center;
+            color: var(--text-white) !important;
+            font-weight: 800;
+            font-size: 1.6rem;
+            text-decoration: none;
+        }
+        
+        .brand-icon-ultra {
+            width: 55px;
+            height: 55px;
+            background: var(--primary-gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            box-shadow: var(--shadow-glow);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+        
+        .brand-icon-ultra i {
+            color: white;
+            font-size: 1.6rem;
+        }
+        
+        .nav-link-ultra {
+            color: var(--text-light) !important;
+            font-weight: 600;
+            padding: 0.8rem 1.8rem !important;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 0 0.3rem;
+            position: relative;
+        }
+        
+        .nav-link-ultra:hover {
+            color: var(--text-white) !important;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .dropdown-menu-ultra {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow-xl);
+            padding: 1rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item-ultra {
+            color: var(--text-white) !important;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+        }
+        
+        .dropdown-item-ultra:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-white) !important;
+            transform: translateX(5px);
+        }        
+
+        /* Main Container */
+        .main-container {
+            margin-top: 100px;
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Analysis Header */
+        .analysis-header {
+            background: var(--bg-secondary);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analysis-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .analysis-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .analysis-title i {
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .analysis-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            text-align: center;
+        }
+        
+        /* Comprehensive Filters Section */
+        .filters-section {
+            background: var(--bg-secondary);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .filters-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .filters-title i {
+            margin-right: 0.8rem;
+            color: var(--primary-color);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-label i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .filter-select, .filter-input {
+            padding: 1rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .filter-button {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+        }
+        
+        .filter-button.apply {
+            background: var(--success-gradient);
+            color: white;
+        }
+        
+        .filter-button.reset {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+        
+        .filter-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }      
+  
+        /* Status Card */
+        .status-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.8rem;
+            color: white;
+            background: var(--info-gradient);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .status-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .load-button {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .load-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+            color: white;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: none;
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .chart-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-title i {
+            margin-right: 0.8rem;
+            color: var(--primary-color);
+        }
+        
+        .chart-container {
+            min-height: 450px;
+            border-radius: 12px;
+        }
+        
+        /* Tables Section */
+        .table-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 700;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1rem;
+        }
+        
+        .table tbody td {
+            padding: 1rem 1.2rem;
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .table tbody tr:hover {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        } 
+       
+        /* Loading Animation */
+        .loading-ultra {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border-radius: 15px;
+            border: none;
+            padding: 1.2rem 2rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+            color: #ef6c00;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+        }
+        
+        /* Badges */
+        .badge {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .badge.bg-primary {
+            background: var(--primary-gradient) !important;
+        }
+        
+        .badge.bg-success {
+            background: var(--success-gradient) !important;
+        }
+        
+        .badge.bg-secondary {
+            background: var(--secondary-gradient) !important;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 2rem 1rem;
+                margin-top: 80px;
+            }
+            
+            .analysis-header {
+                padding: 2rem;
+            }
+            
+            .analysis-title {
+                font-size: 2.2rem;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        /* Smooth Animations */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head><bo
+dy>
+    <!-- Ultra Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-ultra">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand-ultra" href="/">
+                <div class="brand-icon-ultra">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div>
+                    <div style="font-size: 1.6rem; font-weight: 900;">RestaurantIQ Analytics</div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">Restaurant Intelligence Platform</div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="/">
+                            <i class="fas fa-home me-2"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-ultra dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-pie me-2"></i>Analytics Modules
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-ultra">
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/peak-dining">
+                                <i class="fas fa-clock me-2"></i>Peak Dining Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/customer-demographics">
+                                <i class="fas fa-users me-2"></i>Customer Demographics
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/seasonal-behavior">
+                                <i class="fas fa-calendar-alt me-2"></i>Seasonal Behavior
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/menu-analysis">
+                                <i class="fas fa-utensils me-2"></i>Menu Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/revenue-analysis">
+                                <i class="fas fa-chart-line me-2"></i>Revenue Analysis
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/branch-performance">
+                                <i class="fas fa-building me-2"></i>Branch Performance
+                            </a></li>
+                            <li><a class="dropdown-item dropdown-item-ultra" href="/analysis/anomaly-detection">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Anomaly Detection
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="/reports">
+                            <i class="fas fa-file-alt me-2"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ultra" href="#" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>    <!--
+ Main Container -->
+    <div class="main-container">
+        <!-- Analysis Header -->
+        <div class="analysis-header fade-in-up">
+            <h1 class="analysis-title">
+                {% if analysis_type == 'peak-dining' %}
+                    <i class="fas fa-clock"></i>
+                {% elif analysis_type == 'customer-demographics' %}
+                    <i class="fas fa-users"></i>
+                {% elif analysis_type == 'seasonal-behavior' %}
+                    <i class="fas fa-calendar-alt"></i>
+                {% elif analysis_type == 'menu-analysis' %}
+                    <i class="fas fa-utensils"></i>
+                {% elif analysis_type == 'revenue-analysis' %}
+                    <i class="fas fa-chart-line"></i>
+                {% elif analysis_type == 'branch-performance' %}
+                    <i class="fas fa-building"></i>
+                {% elif analysis_type == 'anomaly-detection' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                    <i class="fas fa-chart-bar"></i>
+                {% endif %}
+                {% if analysis_type == 'peak-dining' %}
+                    Peak Dining Analysis
+                {% elif analysis_type == 'customer-demographics' %}
+                    Customer Demographics
+                {% elif analysis_type == 'seasonal-behavior' %}
+                    Seasonal Behavior Analysis
+                {% elif analysis_type == 'menu-analysis' %}
+                    Menu Analysis
+                {% elif analysis_type == 'revenue-analysis' %}
+                    Revenue Analysis
+                {% elif analysis_type == 'branch-performance' %}
+                    Branch Performance
+                {% elif analysis_type == 'anomaly-detection' %}
+                    Anomaly Detection
+                {% else %}
+                    {{ analysis_type.replace('-', ' ').title() }} Analysis
+                {% endif %}
+            </h1>
+            <p class="analysis-subtitle">
+                {% if analysis_type == 'peak-dining' %}
+                    Analyze peak hours, dining patterns, and customer flow across all outlets with advanced filtering
+                {% elif analysis_type == 'customer-demographics' %}
+                    Understand customer age groups, gender distribution, and loyalty segments with detailed insights
+                {% elif analysis_type == 'seasonal-behavior' %}
+                    Track seasonal trends, customer retention, and monthly performance patterns
+                {% elif analysis_type == 'menu-analysis' %}
+                    Track popular items, category performance, and menu optimization insights
+                {% elif analysis_type == 'revenue-analysis' %}
+                    Monitor revenue trends, payment methods, and financial performance metrics
+                {% elif analysis_type == 'branch-performance' %}
+                    Compare outlet performance, rankings, and operational efficiency
+                {% elif analysis_type == 'anomaly-detection' %}
+                    Identify unusual patterns, service issues, and operational alerts
+                {% else %}
+                    Advanced analytics and insights for restaurant operations
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Comprehensive Filters Section -->
+        <div class="filters-section fade-in-up">
+            <h2 class="filters-title">
+                <i class="fas fa-filter"></i>
+                Advanced Filters & Options
+            </h2>
+            
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-store"></i>
+                        Restaurant Outlet
+                    </label>
+                    <select class="filter-select" id="outletFilter">
+                        <option value="">All Outlets</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-calendar"></i>
+                        Season
+                    </label>
+                    <select class="filter-select" id="seasonFilter">
+                        <option value="">All Seasons</option>
+                        <option value="spring">Spring (Mar-May)</option>
+                        <option value="summer">Summer (Jun-Aug)</option>
+                        <option value="autumn">Autumn (Sep-Nov)</option>
+                        <option value="winter">Winter (Dec-Feb)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-star"></i>
+                        Festival Period
+                    </label>
+                    <select class="filter-select" id="festivalFilter">
+                        <option value="">All Periods</option>
+                        <option value="new-year">New Year</option>
+                        <option value="valentine">Valentine's Day</option>
+                        <option value="easter">Easter</option>
+                        <option value="christmas">Christmas</option>
+                        <option value="diwali">Diwali</option>
+                        <option value="eid">Eid</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-clock"></i>
+                        Time Period
+                    </label>
+                    <select class="filter-select" id="timePeriodFilter">
+                        <option value="">All Time</option>
+                        <option value="last-7-days">Last 7 Days</option>
+                        <option value="last-30-days">Last 30 Days</option>
+                        <option value="last-quarter">Last Quarter</option>
+                        <option value="last-year">Last Year</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-users"></i>
+                        Customer Type
+                    </label>
+                    <select class="filter-select" id="customerTypeFilter">
+                        <option value="">All Customers</option>
+                        <option value="new">New Customers</option>
+                        <option value="returning">Returning Customers</option>
+                        <option value="vip">VIP Customers</option>
+                        <option value="regular">Regular Customers</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-credit-card"></i>
+                        Payment Method
+                    </label>
+                    <select class="filter-select" id="paymentFilter">
+                        <option value="">All Methods</option>
+                        <option value="card">Card Payment</option>
+                        <option value="cash">Cash Payment</option>
+                        <option value="digital">Digital Wallet</option>
+                        <option value="online">Online Payment</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-dollar-sign"></i>
+                        Order Value Range
+                    </label>
+                    <select class="filter-select" id="orderValueFilter">
+                        <option value="">All Values</option>
+                        <option value="0-1000">LKR 0 - 1,000</option>
+                        <option value="1000-2500">LKR 1,000 - 2,500</option>
+                        <option value="2500-5000">LKR 2,500 - 5,000</option>
+                        <option value="5000+">LKR 5,000+</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-utensils"></i>
+                        Food Category
+                    </label>
+                    <select class="filter-select" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="starter">Starters</option>
+                        <option value="main">Main Course</option>
+                        <option value="dessert">Desserts</option>
+                        <option value="beverage">Beverages</option>
+                        <option value="snack">Snacks</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-button apply" onclick="applyFilters()">
+                    <i class="fas fa-search me-2"></i>Apply Filters
+                </button>
+                <button class="filter-button reset" onclick="resetFilters()">
+                    <i class="fas fa-undo me-2"></i>Reset All
+                </button>
+            </div>
+        </div>        <!--
+ Status Card -->
+        <div id="status" class="status-card fade-in-up">
+            <div class="status-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="status-text">Configure your filters above and click "Apply Filters" to load analysis with real-time data</div>
+            <button class="load-button" onclick="loadData()">
+                <i class="fas fa-play me-2"></i>Load Analysis
+            </button>
+        </div>
+
+        <!-- Charts Section -->
+        <div id="charts" class="charts-section">
+            <!-- Charts will be loaded here -->
+        </div>
+
+        <!-- Tables Section -->
+        <div id="tables">
+            <!-- Tables will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const analysisType = '{{ analysis_type }}';
+
+        // Load outlets on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOutlets();
+            console.log('Page loaded, analysis type:', analysisType);
+            console.log('Plotly available:', typeof Plotly !== 'undefined');
+        });
+
+        function loadOutlets() {
+            fetch('/api/outlets')
+                .then(response => response.json())
+                .then(outlets => {
+                    const select = document.getElementById('outletFilter');
+                    outlets.forEach(outlet => {
+                        const option = document.createElement('option');
+                        option.value = outlet.id;
+                        option.textContent = outlet.name;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading outlets:', error);
+                });
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusCard = document.getElementById('status');
+            const iconClass = type === 'error' ? 'fas fa-exclamation-circle' : 
+                             type === 'success' ? 'fas fa-check-circle' : 
+                             type === 'loading' ? 'fas fa-spinner fa-spin' : 'fas fa-info-circle';
+            
+            statusCard.innerHTML = `
+                <div class="status-icon">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="status-text">${message}</div>
+            `;
+            
+            statusCard.className = `status-card fade-in-up alert-${type}`;
+        }
+
+        function getFilterParams() {
+            const params = new URLSearchParams();
+            
+            const outletId = document.getElementById('outletFilter').value;
+            const season = document.getElementById('seasonFilter').value;
+            const festival = document.getElementById('festivalFilter').value;
+            const timePeriod = document.getElementById('timePeriodFilter').value;
+            const customerType = document.getElementById('customerTypeFilter').value;
+            const payment = document.getElementById('paymentFilter').value;
+            const orderValue = document.getElementById('orderValueFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            
+            if (outletId) params.append('outletId', outletId);
+            if (season) params.append('season', season);
+            if (festival) params.append('festival', festival);
+            if (timePeriod) params.append('timePeriod', timePeriod);
+            if (customerType) params.append('customerType', customerType);
+            if (payment) params.append('payment', payment);
+            if (orderValue) params.append('orderValue', orderValue);
+            if (category) params.append('category', category);
+            
+            return params;
+        }
+
+        function applyFilters() {
+            loadData();
+        }
+
+        function resetFilters() {
+            document.getElementById('outletFilter').value = '';
+            document.getElementById('seasonFilter').value = '';
+            document.getElementById('festivalFilter').value = '';
+            document.getElementById('timePeriodFilter').value = '';
+            document.getElementById('customerTypeFilter').value = '';
+            document.getElementById('paymentFilter').value = '';
+            document.getElementById('orderValueFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            
+            updateStatus('Filters reset. Click "Apply Filters" to load data with no filters.', 'info');
+        }
+
+        function loadData() {
+            updateStatus('Loading analytics data with applied filters...', 'loading');
+            
+            const params = getFilterParams();
+            const apiUrl = `/api/analytics/${analysisType}?${params.toString()}`;
+            
+            // Load analytics data first
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Analytics API failed: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Analytics data received:', data);
+                    
+                    if (data.error) {
+                        throw new Error('Analytics error: ' + data.error);
+                    }
+                    
+                    updateStatus('Data loaded successfully, generating interactive charts...', 'success');
+                    displayTables(data);
+                    
+                    // Now load charts
+                    const chartsUrl = `/charts/${analysisType}?${params.toString()}`;
+                    return fetch(chartsUrl);
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Charts API failed: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(charts => {
+                    console.log('Charts data received:', charts);
+                    
+                    if (charts.error) {
+                        throw new Error('Charts error: ' + charts.error);
+                    }
+                    
+                    updateStatus('Rendering interactive charts with filtered data...', 'success');
+                    displayCharts(charts);
+                    
+                    // Hide status after successful load
+                    setTimeout(() => {
+                        document.getElementById('status').style.display = 'none';
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Load error:', error);
+                    updateStatus('Error: ' + error.message, 'error');
+                });
+        }     
+   function displayCharts(charts) {
+            const container = document.getElementById('charts');
+            let html = '';
+            
+            console.log('Charts received:', charts);
+            console.log('Number of charts:', Object.keys(charts).length);
+            
+            if (!charts || Object.keys(charts).length === 0) {
+                html = `
+                    <div class="chart-card">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No charts available for this analysis type with current filters
+                        </div>
+                    </div>
+                `;
+            } else {
+                Object.keys(charts).forEach(chartId => {
+                    const chartTitle = chartId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `
+                        <div class="chart-card fade-in-up">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <i class="fas fa-chart-area"></i>
+                                    ${chartTitle}
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="exportChart('${chartId}')">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-container" id="${chartId}"></div>
+                        </div>
+                    `;
+                });
+            }
+            
+            container.innerHTML = html;
+            container.classList.add('charts-section');
+            container.style.display = 'block';
+            
+            // Render charts with better error handling
+            setTimeout(() => {
+                Object.keys(charts).forEach(chartId => {
+                    try {
+                        console.log('Rendering chart:', chartId);
+                        const chartData = JSON.parse(charts[chartId]);
+                        console.log('Chart data parsed for:', chartId);
+                        
+                        if (typeof Plotly !== 'undefined') {
+                            Plotly.newPlot(chartId, chartData.data, chartData.layout, {
+                                responsive: true,
+                                displayModeBar: true,
+                                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                                displaylogo: false
+                            }).then(() => {
+                                console.log('Chart rendered successfully:', chartId);
+                            }).catch(plotlyError => {
+                                console.error('Plotly render error for', chartId, plotlyError);
+                                document.getElementById(chartId).innerHTML = `
+                                    <div class="alert alert-danger">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        Plotly render error: ${plotlyError.message}
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            console.error('Plotly not loaded');
+                            document.getElementById(chartId).innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    Plotly library not loaded
+                                </div>
+                            `;
+                        }
+                    } catch (e) {
+                        console.error('Chart parsing error:', chartId, e);
+                        document.getElementById(chartId).innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Chart parsing error: ${e.message}
+                            </div>
+                        `;
+                    }
+                });
+            }, 500);
+        }
+
+        function displayTables(data) {
+            const container = document.getElementById('tables');
+            let html = '';
+            
+            if (analysisType === 'peak-dining' && data.peakHourTables && data.peakHourTables.overallPeakHours) {
+                html += `
+                    <div class="table-card fade-in-up">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-clock"></i>
+                                Peak Hours Summary
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Hour</th>
+                                        <th>Time Range</th>
+                                        <th>Orders</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.peakHourTables.overallPeakHours.map((hour, index) => `
+                                        <tr>
+                                            <td><span class="badge bg-primary">${index + 1}</span></td>
+                                            <td><strong>${hour.hour}:00</strong></td>
+                                            <td>${hour.timeRange || `${hour.hour}:00 - ${hour.hour + 1}:00`}</td>
+                                            <td><span class="text-success fw-bold">${hour.orderCount}</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar" style="width: ${(hour.orderCount / Math.max(...data.peakHourTables.overallPeakHours.map(h => h.orderCount))) * 100}%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (analysisType === 'menu-analysis' && data.popularItems) {
+                html += `
+                    <div class="table-card fade-in-up">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-utensils"></i>
+                                Popular Menu Items
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Item Name</th>
+                                        <th>Category</th>
+                                        <th>Orders</th>
+                                        <th>Revenue</th>
+                                        <th>Popularity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.popularItems.slice(0, 10).map((item, index) => `
+                                        <tr>
+                                            <td><span class="badge bg-success">${index + 1}</span></td>
+                                            <td><strong>${item.itemName}</strong></td>
+                                            <td><span class="badge bg-secondary">${item.category}</span></td>
+                                            <td><span class="text-primary fw-bold">${item.orderCount}</span></td>
+                                            <td><span class="text-success fw-bold">LKR ${item.totalRevenue.toLocaleString()}</span></td>
+                                            <td>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-success" style="width: ${(item.orderCount / Math.max(...data.popularItems.map(i => i.orderCount))) * 100}%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function exportChart(chartId) {
+            if (typeof Plotly !== 'undefined') {
+                Plotly.downloadImage(chartId, {
+                    format: 'png',
+                    width: 1200,
+                    height: 800,
+                    filename: `${analysisType}-${chartId}`
+                });
+            }
+        }
+
+        function refreshData() {
+            loadData();
+        }
+    </script>
+</body>
+</html>

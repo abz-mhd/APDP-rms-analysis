@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}{{ analysis_type.replace('-', ' ').title() }} - Uber Eats Restaurant{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-chart-line"></i> 
+        {{ analysis_type.replace('-', ' ').title() }} Analysis
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadData()">
+                <i class="fas fa-sync-alt"></i> Load Charts
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Simple Status -->
+<div id="status" class="alert alert-info">
+    <i class="fas fa-info-circle"></i>
+    <span>Click "Load Charts" to display analysis data</span>
+</div>
+
+<!-- Charts Section -->
+<div id="charts" class="row" style="display: none;">
+    <!-- Charts will be loaded here -->
+</div>
+
+<!-- Tables Section -->
+<div id="tables" class="mt-4">
+    <!-- Tables will be loaded here -->
+</div>
+
+<script>
+const analysisType = '{{ analysis_type }}';
+
+function updateStatus(message) {
+    document.getElementById('status').innerHTML = '<i class="fas fa-info-circle"></i> ' + message;
+}
+
+function loadData() {
+    updateStatus('Loading data...');
+    
+    // Load analytics data first
+    fetch('/api/analytics/' + analysisType)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Analytics API failed: ' + response.status + ' - ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Analytics data received:', data);
+            
+            if (data.error) {
+                throw new Error('Analytics error: ' + data.error);
+            }
+            
+            updateStatus('Data loaded successfully, loading charts...');
+            displayTables(data);
+            
+            // Now load charts
+            return fetch('/charts/' + analysisType);
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Charts API failed: ' + response.status + ' - ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(charts => {
+            console.log('Charts data received:', charts);
+            
+            if (charts.error) {
+                throw new Error('Charts error: ' + charts.error);
+            }
+            
+            updateStatus('Rendering charts...');
+            displayCharts(charts);
+            
+            // Hide status after successful load
+            setTimeout(() => {
+                document.getElementById('status').style.display = 'none';
+            }, 1000);
+        })
+        .catch(error => {
+            console.error('Load error:', error);
+            updateStatus('Error: ' + error.message);
+        });
+}
+
+function displayCharts(charts) {
+    const container = document.getElementById('charts');
+    let html = '';
+    
+    console.log('Charts received:', charts);
+    console.log('Number of charts:', Object.keys(charts).length);
+    
+    if (!charts || Object.keys(charts).length === 0) {
+        html = '<div class="col-12"><div class="alert alert-warning">No charts available for this analysis</div></div>';
+    } else {
+        Object.keys(charts).forEach(chartId => {
+            const chartTitle = chartId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            html += `
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>${chartTitle}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="${chartId}" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+    
+    // Render charts with better error handling
+    setTimeout(() => {
+        Object.keys(charts).forEach(chartId => {
+            try {
+                console.log('Rendering chart:', chartId);
+                const chartData = JSON.parse(charts[chartId]);
+                console.log('Chart data parsed for:', chartId);
+                
+                if (typeof Plotly !== 'undefined') {
+                    Plotly.newPlot(chartId, chartData.data, chartData.layout, {
+                        responsive: true,
+                        displayModeBar: false
+                    }).then(() => {
+                        console.log('Chart rendered successfully:', chartId);
+                    }).catch(plotlyError => {
+                        console.error('Plotly render error for', chartId, plotlyError);
+                        document.getElementById(chartId).innerHTML = '<div class="alert alert-danger">Plotly render error: ' + plotlyError.message + '</div>';
+                    });
+                } else {
+                    console.error('Plotly not loaded');
+                    document.getElementById(chartId).innerHTML = '<div class="alert alert-danger">Plotly library not loaded</div>';
+                }
+            } catch (e) {
+                console.error('Chart parsing error:', chartId, e);
+                document.getElementById(chartId).innerHTML = '<div class="alert alert-danger">Chart parsing error: ' + e.message + '</div>';
+            }
+        });
+    }, 500);
+}
+
+function displayTables(data) {
+    const container = document.getElementById('tables');
+    let html = '';
+    
+    if (analysisType === 'peak-dining' && data.peakHourTables && data.peakHourTables.overallPeakHours) {
+        html += `
+            <div class="card">
+                <div class="card-header">
+                    <h5>Peak Hours</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr><th>Rank</th><th>Hour</th><th>Orders</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.peakHourTables.overallPeakHours.map((hour, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${hour.hour}:00</td>
+                                    <td>${hour.orderCount}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (analysisType === 'menu-analysis' && data.popularItems) {
+        html += `
+            <div class="card">
+                <div class="card-header">
+                    <h5>Popular Items</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr><th>Rank</th><th>Item</th><th>Orders</th><th>Revenue</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.popularItems.slice(0, 10).map((item, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.itemName}</td>
+                                    <td>${item.orderCount}</td>
+                                    <td>LKR ${item.totalRevenue.toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+// Auto-load on page ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded, analysis type:', analysisType);
+    console.log('Plotly available:', typeof Plotly !== 'undefined');
+    
+    // Auto-load after 1 second
+    setTimeout(loadData, 1000);
+});
+</script>
+{% endblock %}

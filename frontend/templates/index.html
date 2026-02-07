@@ -1,0 +1,573 @@
+{% extends "base.html" %}
+
+{% block title %}Uber Eats Restaurant - Home{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Simple Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1" style="color: #333333; font-weight: 600;">Dashboard Overview</h1>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Welcome back! Here's what's happening with your restaurants today.</p>
+                </div>
+                <div>
+                    <select class="form-select form-select-sm" style="width: auto; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <option>Select period...</option>
+                        <option>Today</option>
+                        <option>This Week</option>
+                        <option>This Month</option>
+                        <option>This Year</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Key Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <!-- New Orders -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">New Orders</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">234</h2>
+                    </div>
+                    <div class="simple-metric-icon" style="background: #28a745;">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-success me-2">
+                        <i class="fas fa-arrow-up me-1"></i>12%
+                    </span>
+                    <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">Total Revenue</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">LKR 1.45M</h2>
+                    </div>
+                    <div class="simple-metric-icon" style="background: #007bff;">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-2">
+                        <i class="fas fa-arrow-up me-1"></i>8%
+                    </span>
+                    <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Customers -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">Active Customers</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">1,234</h2>
+                    </div>
+                    <div class="simple-metric-icon" style="background: #ffc107;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-warning me-2">
+                        <i class="fas fa-arrow-up me-1"></i>5%
+                    </span>
+                    <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Orders -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-metric-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 500;">Total Orders</p>
+                        <h2 class="mb-0" style="font-weight: 700; color: #333333;">34</h2>
+                    </div>
+                    <div class="simple-metric-icon" style="background: #6f42c1;">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-info me-2">
+                        <i class="fas fa-arrow-up me-1"></i>15%
+                    </span>
+                    <span class="text-muted" style="font-size: 0.85rem;">vs last month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Charts Row -->
+    <div class="row g-3 mb-4">
+        <!-- Order Trends Chart -->
+        <div class="col-xl-8">
+            <div class="simple-chart-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-1" style="font-weight: 600; color: #333333;">Order Trends</h5>
+                        <p class="text-muted mb-0" style="font-size: 0.85rem;">Daily order volume and revenue</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" style="border-radius: 6px; font-weight: 500;">
+                        Actions
+                    </button>
+                </div>
+                <div id="orderTrendsChart" style="height: 350px;"></div>
+            </div>
+        </div>
+
+        <!-- Revenue Distribution Chart -->
+        <div class="col-xl-4">
+            <div class="simple-chart-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-1" style="font-weight: 600; color: #333333;">Revenue Distribution</h5>
+                        <p class="text-muted mb-0" style="font-size: 0.85rem;">By outlet</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" style="border-radius: 6px;">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+                <div class="text-center mb-3">
+                    <div class="donut-chart-container">
+                        <canvas id="revenueDonutChart" width="200" height="200"></canvas>
+                        <div class="donut-center-text">
+                            <div style="font-size: 0.85rem; color: #6c757d;">Percent</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #333333;">75</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.9rem; color: #6c757d;">32%</span>
+                        <div class="flex-grow-1 mx-3">
+                            <div class="progress" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar" style="width: 32%; background: #ffc107;"></div>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.85rem; color: #6c757d;">Spendings Target</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Bottom Metrics Row -->
+    <div class="row g-3 mb-4">
+        <!-- Income -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-stat-card">
+                <p class="text-muted mb-2" style="font-size: 0.85rem;">Income</p>
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 5,456</h4>
+                <span class="badge bg-success">
+                    <i class="fas fa-arrow-up me-1"></i>+16%
+                </span>
+            </div>
+        </div>
+
+        <!-- Expenses -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-stat-card">
+                <p class="text-muted mb-2" style="font-size: 0.85rem;">Expenses</p>
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 4,764</h4>
+                <span class="badge bg-danger">
+                    <i class="fas fa-arrow-up me-1"></i>8%
+                </span>
+            </div>
+        </div>
+
+        <!-- Spendings -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-stat-card">
+                <p class="text-muted mb-2" style="font-size: 0.85rem;">Spendings</p>
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 1.5M</h4>
+                <span class="badge bg-success">
+                    <i class="fas fa-arrow-down me-1"></i>15%
+                </span>
+            </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="col-xl-3 col-md-6">
+            <div class="simple-stat-card">
+                <p class="text-muted mb-2" style="font-size: 0.85rem;">Totals</p>
+                <h4 class="mb-2" style="font-weight: 700; color: #333333;">LKR 31,564</h4>
+                <span class="badge bg-warning">
+                    <i class="fas fa-arrow-up me-1"></i>+76%
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Target Section -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="simple-chart-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0" style="font-weight: 600; color: #333333;">Target Section</h5>
+                    <a href="#" class="text-decoration-none" style="color: #4a90e2; font-size: 0.9rem; font-weight: 500;">View Details</a>
+                </div>
+                <div class="row g-3">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #dc3545;">71%</h3>
+                            <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar" style="width: 71%; background: #dc3545;"></div>
+                            </div>
+                            <p class="text-muted mb-0" style="font-size: 0.85rem;">Income Target</p>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #28a745;">54%</h3>
+                            <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar" style="width: 54%; background: #28a745;"></div>
+                            </div>
+                            <p class="text-muted mb-0" style="font-size: 0.85rem;">Expenses Target</p>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #ffc107;">32%</h3>
+                            <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar" style="width: 32%; background: #ffc107;"></div>
+                            </div>
+                            <p class="text-muted mb-0" style="font-size: 0.85rem;">Spendings Target</p>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="simple-target-card">
+                            <h3 class="mb-2" style="font-weight: 700; color: #007bff;">89%</h3>
+                            <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar" style="width: 89%; background: #007bff;"></div>
+                            </div>
+                            <p class="text-muted mb-0" style="font-size: 0.85rem;">Totals Target</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Analytics Modules -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <h5 class="mb-3" style="font-weight: 600; color: #333333;">Analytics Modules</h5>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/peak-dining" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Peak Dining</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Hours & Patterns</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/customer-demographics" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Demographics</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Customer Analysis</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/menu-analysis" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Menu Analysis</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Items & Categories</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/revenue-analysis" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Revenue</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Financial Metrics</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/seasonal-behavior" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Seasonal</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Trends & Retention</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/anomaly-detection" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Anomalies</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Alerts & Monitoring</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/analysis/branch-performance" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #4a90e2;">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Branch Performance</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Rankings & Efficiency</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="/reports/" class="simple-analytics-module">
+                <div class="simple-module-icon" style="background: #6c757d;">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1" style="font-weight: 600; color: #333333;">Reports</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">Export & Download</p>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Simple Card Styles */
+.simple-metric-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+
+.simple-metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.simple-metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.simple-chart-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    height: 100%;
+}
+
+.simple-stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.simple-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.simple-target-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.simple-analytics-module {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 1px solid #e9ecef;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.simple-analytics-module:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    border-color: #4a90e2;
+}
+
+.simple-module-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* Donut Chart Container */
+.donut-chart-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.donut-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .simple-metric-card,
+    .simple-chart-card,
+    .simple-stat-card {
+        padding: 1rem;
+    }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Sample Donut Chart
+const ctx = document.getElementById('revenueDonutChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Outlet 1', 'Outlet 2', 'Outlet 3', 'Outlet 4'],
+            datasets: [{
+                data: [30, 25, 25, 20],
+                backgroundColor: ['#28a745', '#007bff', '#ffc107', '#6f42c1'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+
+// Sample Order Trends Chart (using Plotly)
+const orderData = {
+    x: ['Jan 09', '02 Jan', '03 Jan', '04 Jan', '05 Jan', '06 Jan', '07 Jan', '08 Jan', '09 Jan', '10 Jan', '11 Jan', '12 Jan'],
+    y: [450, 550, 420, 680, 250, 450, 180, 350, 750, 320, 150, 200],
+    type: 'bar',
+    marker: {
+        color: '#007bff',
+        opacity: 0.8
+    },
+    name: 'Orders'
+};
+
+const revenueData = {
+    x: ['Jan 09', '02 Jan', '03 Jan', '04 Jan', '05 Jan', '06 Jan', '07 Jan', '08 Jan', '09 Jan', '10 Jan', '11 Jan', '12 Jan'],
+    y: [20, 32, 28, 38, 22, 30, 25, 28, 35, 25, 22, 28],
+    type: 'scatter',
+    mode: 'lines+markers',
+    line: {
+        color: '#28a745',
+        width: 3
+    },
+    marker: {
+        size: 8,
+        color: '#28a745'
+    },
+    name: 'Revenue',
+    yaxis: 'y2'
+};
+
+const layout = {
+    showlegend: true,
+    legend: {
+        x: 0.5,
+        y: -0.15,
+        xanchor: 'center',
+        orientation: 'horizontal'
+    },
+    margin: { t: 20, b: 40, l: 50, r: 50 },
+    xaxis: {
+        showgrid: false
+    },
+    yaxis: {
+        title: 'Orders',
+        showgrid: true,
+        gridcolor: '#f0f0f0'
+    },
+    yaxis2: {
+        title: 'Revenue (K)',
+        overlaying: 'y',
+        side: 'right',
+        showgrid: false
+    },
+    plot_bgcolor: 'white',
+    paper_bgcolor: 'white'
+};
+
+Plotly.newPlot('orderTrendsChart', [orderData, revenueData], layout, {responsive: true, displayModeBar: false});
+</script>
+{% endblock %}
